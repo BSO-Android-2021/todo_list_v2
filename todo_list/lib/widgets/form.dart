@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_list/model/task.dart';
 import 'package:todo_list/pages/home.dart';
 import 'package:todo_list/widgets/action_success_dialog.dart';
 import 'package:todo_list/widgets/custom_textstyle.dart';
@@ -10,6 +11,8 @@ class AddDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController judulController = TextEditingController();
+    TextEditingController descController = TextEditingController();
     return AlertDialog(
       title: const Text("Add"),
       //memberi ukuran ke content yang akan ditampilkan di dalam dialog
@@ -33,8 +36,9 @@ class AddDialog extends StatelessWidget {
                 //memberi warna dan ketebalan pada border
                 border: Border.all(width: 1, color: Colors.grey.shade600),
               ),
-              child: const TextField(
-                decoration: InputDecoration(
+              child: TextField(
+                controller: judulController,
+                decoration: const InputDecoration(
                   hintText: "Task Tittle",
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
@@ -57,9 +61,10 @@ class AddDialog extends StatelessWidget {
                 //memberi warna dan ketebalan pada border
                 border: Border.all(width: 1, color: Colors.grey.shade600),
               ),
-              child: const TextField(
+              child: TextField(
+                controller: descController,
                 maxLines: 8,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: "Task Tittle",
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
@@ -85,6 +90,7 @@ class AddDialog extends StatelessWidget {
         //button submit
         ElevatedButton(
           onPressed: () {
+            listOfTask.add(Task(title: judulController.text, desc: descController.text));
             showDialog(
                 context: context,
                 builder: (context) => const AddSuccessDialog());
@@ -103,10 +109,17 @@ class AddDialog extends StatelessWidget {
 class EditTask extends StatelessWidget {
   ///Widget Custom yang mereturn AlertDialog, berfungsi sebagai widget
   ///yang ditampilkan ketika tombol edit diklik
-  const EditTask({Key? key}) : super(key: key);
-
+  EditTask({Key? key, required this.index}) : super(key: key);
+ int index;
   @override
   Widget build(BuildContext context) {
+    TextEditingController titleController = TextEditingController();
+    TextEditingController descController = TextEditingController();
+
+    //mengassign data task terbaru kedalam controller
+    titleController.text = listOfTask[index].title;
+    descController.text = listOfTask[index].desc;
+    
     return AlertDialog(
       title: const Text("Edit"),
       content: SizedBox(
@@ -128,8 +141,9 @@ class EditTask extends StatelessWidget {
                 //memberi warna dan ketebalan pada border
                 border: Border.all(width: 1, color: Colors.grey.shade600),
               ),
-              child: const TextField(
-                decoration: InputDecoration(
+              child: TextField(
+                controller: titleController,
+                decoration:const InputDecoration(
                   hintText: "Task Tittle",
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
@@ -152,10 +166,11 @@ class EditTask extends StatelessWidget {
                 //memberi warna dan ketebalan pada border
                 border: Border.all(width: 1, color: Colors.grey.shade600),
               ),
-              child: const TextField(
+              child:  TextField(
+                controller: descController,
                 maxLines: 8,
-                decoration: InputDecoration(
-                  hintText: "Task Tittle",
+                decoration: const InputDecoration(
+                  hintText: "Task Description",
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
                 ),
@@ -180,6 +195,8 @@ class EditTask extends StatelessWidget {
         //tombol submit
         ElevatedButton(
             onPressed: () {
+              listOfTask[index].title = titleController.text;
+              listOfTask[index].desc = descController.text;
               showDialog(
                   context: context,
                   builder: (context) => const EditSuccessDialog());
@@ -196,8 +213,8 @@ class EditTask extends StatelessWidget {
 
 class DeleteTaskDialog extends StatelessWidget {
   ///Merupakan Dialog yang akan mengkonfirmasi penghapusan
-  const DeleteTaskDialog({Key? key}) : super(key: key);
-
+  DeleteTaskDialog({Key? key,required this.index}) : super(key: key);
+  int index;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -231,6 +248,7 @@ class DeleteTaskDialog extends StatelessWidget {
                 //tombol delete
                 ElevatedButton(
                     onPressed: () {
+                      listOfTask.removeAt(index);
                       showDialog(
                           context: context,
                           builder: (context) => const DeleteSuccessDialog());

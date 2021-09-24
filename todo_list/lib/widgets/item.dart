@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:todo_list/model/task.dart';
 import 'package:todo_list/pages/home.dart';
 import 'package:todo_list/widgets/custom_textstyle.dart';
 import 'package:todo_list/widgets/form.dart';
 
 class Item extends StatefulWidget {
   ///Widget ini merupakan card yg barisi satuan item
-  Item({Key? key}) : super(key: key);
-  bool indicator = false;
+  Item({Key? key, required this.index}) : super(key: key);
+  int index;
   @override
   _ItemState createState() => _ItemState();
 }
@@ -19,7 +20,7 @@ class _ItemState extends State<Item> {
       child: Card(
         //jika indicator bernilai false, maka elevation akan bernilai 5
         //sebaliknya jika true, elevation akan bernilai 0
-        elevation: widget.indicator ? 0 : 5,
+        elevation: listOfTask[widget.index].isDone == true ? 0 : 5,
         shadowColor: primaryColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -32,12 +33,18 @@ class _ItemState extends State<Item> {
                 Container(
                   height: 80,
                   width: 3,
-                  color: widget.indicator ? Colors.black38 : primaryColor,
+                  color: listOfTask[widget.index].isDone == true
+                      ? Colors.black38
+                      : primaryColor,
                 ),
                 Checkbox(
-                    value: widget.indicator,
+                    value: listOfTask[widget.index].isDone,
                     onChanged: (value) {
-                      widget.indicator = !widget.indicator;
+                      listOfTask[widget.index].isDone =
+                          !listOfTask[widget.index].isDone;
+                      print(listOfTask[widget.index].isDone);
+                      listFinished.add(listOfTask[widget.index]);
+                      listOfTask.removeAt(widget.index);
                       setState(() {});
                     }),
                 //Berisi judul dan deskripsi task
@@ -48,7 +55,7 @@ class _ItemState extends State<Item> {
                     children: [
                       //item title
                       Text(
-                        "Learn flutter",
+                        listOfTask[widget.index].title,
                         style: myCustomTextStyle(StyleType.black1),
                       ),
                       //memberi jarak setinggi 18 pixel antara judul dan deskripsi
@@ -56,7 +63,7 @@ class _ItemState extends State<Item> {
                         height: 18,
                       ),
                       Text(
-                        "Im Ready to lear flutter in BSO Android 2021, and ill make my own app",
+                        listOfTask[widget.index].desc,
                         //maximal hanya akan satu baris
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -76,7 +83,10 @@ class _ItemState extends State<Item> {
                   child: InkWell(
                     onTap: () {
                       showDialog(
-                          context: context, builder: (context) => EditTask());
+                          context: context,
+                          builder: (context) => EditTask(
+                                index: widget.index,
+                              ));
                     },
                     child: Row(
                       children: const [
@@ -96,16 +106,13 @@ class _ItemState extends State<Item> {
                   ),
                 ),
                 PopupMenuItem(
-                  onTap: (){
-                    showDialog(
-                        context: context,
-                        builder: (context) => const DeleteTaskDialog());
-                  },
                     child: InkWell(
                   onTap: () {
                     showDialog(
                         context: context,
-                        builder: (context) => const DeleteTaskDialog());
+                        builder: (context) => DeleteTaskDialog(
+                              index: widget.index,
+                            ));
                   },
                   child: Row(
                     children: const [

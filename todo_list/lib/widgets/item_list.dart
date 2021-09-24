@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_list/model/task.dart';
 import 'package:todo_list/widgets/item.dart';
 
 class ItemList extends StatelessWidget {
@@ -37,7 +38,8 @@ class ItemList extends StatelessWidget {
             ),
           ),
           //List of card item,
-          for (var i = 0; i < 20; i++) Item()
+          for (var i = 0; i < listOfTask.length; i++) Item(index: i,),
+          
         ],
       ),
     );
